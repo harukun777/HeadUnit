@@ -1470,6 +1470,13 @@ class SettingsFragment : Fragment() {
         items.add(SettingItem.CategoryHeader("info", R.string.category_info))
 
         items.add(SettingItem.SettingEntry(
+            stableId = "appUpdates",
+            nameResId = R.string.update_title,
+            value = getString(R.string.update_auto),
+            onClick = { startActivity(Intent(requireContext(), com.andrerinas.headunitrevived.update.UpdateActivity::class.java)) }
+        ))
+
+        items.add(SettingItem.SettingEntry(
             stableId = "version",
             nameResId = R.string.version,
             value = BuildConfig.VERSION_NAME,

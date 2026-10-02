@@ -69,7 +69,7 @@ class MainActivity : BaseActivity() {
 
     private val finishReceiver = object : android.content.BroadcastReceiver() {
         override fun onReceive(context: android.content.Context, intent: Intent) {
-            if (intent.action == "com.andrerinas.headunitrevived.ACTION_FINISH_ACTIVITIES") {
+            if (intent.action == "com.retportal.retdrive.ACTION_FINISH_ACTIVITIES") {
                 AppLog.i("MainActivity: Received finish request. Closing.")
                 finishAffinity()
             }
@@ -206,7 +206,7 @@ class MainActivity : BaseActivity() {
 
         ContextCompat.registerReceiver(
             this, finishReceiver,
-            android.content.IntentFilter("com.andrerinas.headunitrevived.ACTION_FINISH_ACTIVITIES"),
+            android.content.IntentFilter("com.retportal.retdrive.ACTION_FINISH_ACTIVITIES"),
             ContextCompat.RECEIVER_NOT_EXPORTED
         )
         isFinishReceiverRegistered = true
@@ -776,7 +776,7 @@ class MainActivity : BaseActivity() {
         val intentData = intent.data
         val intentAction = intent.action
 
-        if (intentAction == "com.andrerinas.headunitrevived.ACTION_EXIT") {
+        if (intentAction == "com.retportal.retdrive.ACTION_EXIT") {
             AppLog.i("MainActivity: Received exit action")
             val exitIntent = Intent(this, AapService::class.java).apply {
                 this.action = AapService.ACTION_STOP_SERVICE
@@ -883,6 +883,28 @@ class MainActivity : BaseActivity() {
         isOrientationReceiverRegistered = true
 
         launchProjectionIfReady()
+        checkForAppUpdate()
+    }
+
+    private var appUpdateJob: Job? = null
+    private fun checkForAppUpdate() {
+        if (appUpdateJob?.isActive == true || App.provide(this).commManager.isConnected ||
+            !Settings(this).hasCompletedSetupWizard) return
+        appUpdateJob = lifecycleScope.launch {
+            try {
+                val apk = com.andrerinas.headunitrevived.update.AppUpdater.check(applicationContext, automatic = true)
+                if (apk != null && isForeground && !isFinishing && !App.provide(this@MainActivity).commManager.isConnected) {
+                    android.app.AlertDialog.Builder(this@MainActivity)
+                        .setTitle(R.string.update_title)
+                        .setMessage(R.string.update_ready)
+                        .setPositiveButton(R.string.update_install) { _, _ ->
+                            startActivity(Intent(this@MainActivity, com.andrerinas.headunitrevived.update.UpdateActivity::class.java))
+                        }
+                        .setNegativeButton(android.R.string.cancel, null).show()
+                }
+            } catch (e: kotlinx.coroutines.CancellationException) { throw e }
+            catch (e: Exception) { AppLog.w("Automatic update check failed: ${e.message}") }
+        }
     }
 
     private var projectionLaunchPending = false
@@ -1011,6 +1033,6 @@ class MainActivity : BaseActivity() {
          */
         @Volatile var hasAdvancedToActiveState: Boolean = false
 
-        const val ACTION_RECREATE_MAIN = "com.andrerinas.headunitrevived.ACTION_RECREATE_MAIN"
+        const val ACTION_RECREATE_MAIN = "com.retportal.retdrive.ACTION_RECREATE_MAIN"
     }
 }

@@ -113,10 +113,10 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.andrerinas.headunitrevived"
+        applicationId = "com.retportal.retdrive"
         minSdk = 16
         targetSdk = 36
-        versionCode = 80
+        versionCode = 83
         versionName = "3.1.0"
         setProperty("archivesBaseName", "${applicationId}_${versionName}")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

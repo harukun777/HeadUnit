@@ -140,7 +140,7 @@ class KeymapFragment : Fragment(), MainActivity.KeyListener {
 
     private val keyCodeReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            if (intent.action == "com.andrerinas.headunitrevived.DEBUG_KEY") {
+            if (intent.action == "com.retportal.retdrive.DEBUG_KEY") {
                 val action = (intent.getStringExtra("action") ?: "unknown").replace("com.andrerinas.headunitrevived.", "")
                 
                 // Try to find a keycode in various common extras
@@ -174,7 +174,7 @@ class KeymapFragment : Fragment(), MainActivity.KeyListener {
     override fun onResume() {
         super.onResume()
         val filter = IntentFilters.keyEvent
-        filter.addAction("com.andrerinas.headunitrevived.DEBUG_KEY")
+        filter.addAction("com.retportal.retdrive.DEBUG_KEY")
         ContextCompat.registerReceiver(requireContext(), keyCodeReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
     }
 

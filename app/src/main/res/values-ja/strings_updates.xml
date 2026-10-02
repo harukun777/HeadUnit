@@ -1,0 +1,19 @@
+<resources>
+    <string name="update_title">アプリの更新</string>
+    <string name="update_description">更新情報のHTTPS URLを登録してください。ホーム画面を開いた際に1日1回確認し、新しいバージョンを自動ダウンロードします。インストール時はAndroidの確認が必要です。Android Auto接続中は更新を開始しません。</string>
+    <string name="update_auto">自動で確認・ダウンロードする</string>
+    <string name="update_url">更新情報のURL（HTTPS）</string>
+    <string name="update_save">URLを保存</string>
+    <string name="update_saved">保存しました。</string>
+    <string name="update_invalid_url">有効なHTTPS URLを入力してください。</string>
+    <string name="update_no_url">先に更新情報のURLを登録して保存してください。</string>
+    <string name="update_check">今すぐ更新を確認</string>
+    <string name="update_checking">更新の確認・ダウンロード中…</string>
+    <string name="update_current">この端末で利用できる新しいバージョンはありません。</string>
+    <string name="update_ready">新しいバージョンをダウンロードしました。Android Autoを切断した状態でインストールできます。</string>
+    <string name="update_install">ダウンロードした更新をインストール</string>
+    <string name="update_failed">更新できませんでした：%1$s</string>
+    <string name="update_permission">このアプリからのインストールを許可して、ここに戻ってください。</string>
+    <string name="update_connected">Android Autoを切断してから更新してください。</string>
+    <string name="update_back">戻る</string>
+</resources>

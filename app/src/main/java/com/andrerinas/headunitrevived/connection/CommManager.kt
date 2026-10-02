@@ -409,7 +409,7 @@ class CommManager(
         // Transport already quit on its own — no ByeByeRequest needed (connection is dead).
         _disconnectJob = _scope.launch { doDisconnect(sendByeBye = false) }
         if (settings.killOnDisconnect) {
-            context.sendBroadcast(android.content.Intent("com.andrerinas.headunitrevived.ACTION_FINISH_ACTIVITIES").apply {
+            context.sendBroadcast(android.content.Intent("com.retportal.retdrive.ACTION_FINISH_ACTIVITIES").apply {
                 setPackage(context.packageName)
             })
             android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
@@ -565,7 +565,7 @@ class CommManager(
         }
         _disconnectJob = _scope.launch { doDisconnect(sendByeBye) }
         if (settings.killOnDisconnect) {
-            context.sendBroadcast(android.content.Intent("com.andrerinas.headunitrevived.ACTION_FINISH_ACTIVITIES").apply {
+            context.sendBroadcast(android.content.Intent("com.retportal.retdrive.ACTION_FINISH_ACTIVITIES").apply {
                 setPackage(context.packageName)
             })
             android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({

@@ -280,7 +280,7 @@ class Settings(private val context: Context) {
 
     // Vehicle info settings (sent to phone during Android Auto handshake)
     var vehicleDisplayName: String
-        get() = prefs.getString("vehicle-display-name", "Headunit Revived")!!
+        get() = prefs.getString("vehicle-display-name", "Auto on Andoroid")!!
         set(value) { prefs.edit().putString("vehicle-display-name", value).apply() }
 
     var vehicleMake: String

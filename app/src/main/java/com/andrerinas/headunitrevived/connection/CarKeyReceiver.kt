@@ -42,7 +42,7 @@ class CarKeyReceiver : BroadcastReceiver() {
         AppLog.i("CarKeyReceiver: Handling intent action: $action")
 
         // Broadcast for KeymapFragment debugger (raw intent data)
-        context.sendBroadcast(Intent("com.andrerinas.headunitrevived.DEBUG_KEY").apply {
+        context.sendBroadcast(Intent("com.retportal.retdrive.DEBUG_KEY").apply {
             setPackage(context.packageName)
             putExtra("action", action)
             intent.extras?.let { putExtras(it) }

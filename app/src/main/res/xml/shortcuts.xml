@@ -7,8 +7,8 @@
         android:shortcutShortLabel="@string/shortcut_connect_title"
         android:shortcutLongLabel="@string/shortcut_connect_desc">
         <intent
-            android:action="com.andrerinas.headunitrevived.ACTION_CONNECT"
-            android:targetPackage="com.andrerinas.headunitrevived"
+            android:action="com.retportal.retdrive.ACTION_CONNECT"
+            android:targetPackage="com.retportal.retdrive"
             android:targetClass="com.andrerinas.headunitrevived.main.AutomationActivity" />
     </shortcut>
     <shortcut
@@ -18,8 +18,8 @@
         android:shortcutShortLabel="@string/shortcut_selfmode_title"
         android:shortcutLongLabel="@string/shortcut_selfmode_desc">
         <intent
-            android:action="com.andrerinas.headunitrevived.ACTION_START_SELF_MODE"
-            android:targetPackage="com.andrerinas.headunitrevived"
+            android:action="com.retportal.retdrive.ACTION_START_SELF_MODE"
+            android:targetPackage="com.retportal.retdrive"
             android:targetClass="com.andrerinas.headunitrevived.main.AutomationActivity" />
     </shortcut>
 
@@ -30,8 +30,8 @@
         android:shortcutShortLabel="@string/shortcut_disconnect_title"
         android:shortcutLongLabel="@string/shortcut_disconnect_desc">
         <intent
-            android:action="com.andrerinas.headunitrevived.ACTION_DISCONNECT"
-            android:targetPackage="com.andrerinas.headunitrevived"
+            android:action="com.retportal.retdrive.ACTION_DISCONNECT"
+            android:targetPackage="com.retportal.retdrive"
             android:targetClass="com.andrerinas.headunitrevived.main.AutomationActivity" />
     </shortcut>
 
@@ -42,8 +42,8 @@
         android:shortcutShortLabel="@string/shortcut_exit_title"
         android:shortcutLongLabel="@string/shortcut_exit_desc">
         <intent
-            android:action="com.andrerinas.headunitrevived.ACTION_STOP_SERVICE"
-            android:targetPackage="com.andrerinas.headunitrevived"
+            android:action="com.retportal.retdrive.ACTION_STOP_SERVICE"
+            android:targetPackage="com.retportal.retdrive"
             android:targetClass="com.andrerinas.headunitrevived.main.AutomationActivity" />
     </shortcut>
 
@@ -54,8 +54,8 @@
         android:shortcutShortLabel="@string/shortcut_night_mode_day_title"
         android:shortcutLongLabel="@string/shortcut_night_mode_day_desc">
         <intent
-            android:action="com.andrerinas.headunitrevived.ACTION_SET_NIGHT_MODE"
-            android:targetPackage="com.andrerinas.headunitrevived"
+            android:action="com.retportal.retdrive.ACTION_SET_NIGHT_MODE"
+            android:targetPackage="com.retportal.retdrive"
             android:targetClass="com.andrerinas.headunitrevived.main.AutomationActivity">
             <extra android:name="state" android:value="day" />
         </intent>
@@ -68,8 +68,8 @@
         android:shortcutShortLabel="@string/shortcut_night_mode_night_title"
         android:shortcutLongLabel="@string/shortcut_night_mode_night_desc">
         <intent
-            android:action="com.andrerinas.headunitrevived.ACTION_SET_NIGHT_MODE"
-            android:targetPackage="com.andrerinas.headunitrevived"
+            android:action="com.retportal.retdrive.ACTION_SET_NIGHT_MODE"
+            android:targetPackage="com.retportal.retdrive"
             android:targetClass="com.andrerinas.headunitrevived.main.AutomationActivity">
             <extra android:name="state" android:value="night" />
         </intent>
@@ -82,8 +82,8 @@
         android:shortcutShortLabel="@string/shortcut_night_mode_auto_title"
         android:shortcutLongLabel="@string/shortcut_night_mode_auto_desc">
         <intent
-            android:action="com.andrerinas.headunitrevived.ACTION_SET_NIGHT_MODE"
-            android:targetPackage="com.andrerinas.headunitrevived"
+            android:action="com.retportal.retdrive.ACTION_SET_NIGHT_MODE"
+            android:targetPackage="com.retportal.retdrive"
             android:targetClass="com.andrerinas.headunitrevived.main.AutomationActivity">
             <extra android:name="state" android:value="auto" />
         </intent>

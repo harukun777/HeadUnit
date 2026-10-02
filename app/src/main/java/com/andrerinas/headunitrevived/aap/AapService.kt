@@ -1616,7 +1616,7 @@ class AapService : Service(), UsbReceiver.Listener {
         // Handle stop before re-posting the notification to avoid a flash
         if (intent?.action == ACTION_STOP_SERVICE) {
             AppLog.i("Stop action received. Broadcasting finish request to activities.")
-            sendBroadcast(Intent("com.andrerinas.headunitrevived.ACTION_FINISH_ACTIVITIES").apply {
+            sendBroadcast(Intent("com.retportal.retdrive.ACTION_FINISH_ACTIVITIES").apply {
                 setPackage(packageName)
             })
             isDestroying = true
@@ -2584,26 +2584,26 @@ class AapService : Service(), UsbReceiver.Listener {
         private const val PROJECTION_LAUNCH_NOTIFICATION_ID = 43
 
         // Service action strings used with startService() and sendBroadcast()
-        const val ACTION_START_SELF_MODE           = "com.andrerinas.headunitrevived.ACTION_START_SELF_MODE"
-        const val ACTION_START_WIRELESS            = "com.andrerinas.headunitrevived.ACTION_START_WIRELESS"
-        const val ACTION_START_WIRELESS_SCAN       = "com.andrerinas.headunitrevived.ACTION_START_WIRELESS_SCAN"
-        const val ACTION_STOP_WIRELESS             = "com.andrerinas.headunitrevived.ACTION_STOP_WIRELESS"
-        const val ACTION_NATIVE_AA_POKE            = "com.andrerinas.headunitrevived.ACTION_NATIVE_AA_POKE"
-        const val ACTION_NEARBY_CONNECT             = "com.andrerinas.headunitrevived.ACTION_NEARBY_CONNECT"
-        const val ACTION_CHECK_USB                 = "com.andrerinas.headunitrevived.ACTION_CHECK_USB"
-        const val ACTION_STOP_SERVICE              = "com.andrerinas.headunitrevived.aap.action.STOP_SERVICE"
-        const val ACTION_DISCONNECT                = "com.andrerinas.headunitrevived.ACTION_DISCONNECT"
-        const val ACTION_REQUEST_NIGHT_MODE_UPDATE = "com.andrerinas.headunitrevived.aap.action.REQUEST_NIGHT_MODE_UPDATE"
-        const val ACTION_NIGHT_MODE_CHANGED      = "com.andrerinas.headunitrevived.ACTION_NIGHT_MODE_CHANGED"
-        const val ACTION_ORIENTATION_CHANGED     = "com.andrerinas.headunitrevived.ACTION_ORIENTATION_CHANGED"
-        const val ACTION_REFRESH_SENSORS         = "com.andrerinas.headunitrevived.aap.action.REFRESH_SENSORS"
-        const val ACTION_RESTART_AUDIO           = "com.andrerinas.headunitrevived.aap.action.RESTART_AUDIO"
+        const val ACTION_START_SELF_MODE           = "com.retportal.retdrive.ACTION_START_SELF_MODE"
+        const val ACTION_START_WIRELESS            = "com.retportal.retdrive.ACTION_START_WIRELESS"
+        const val ACTION_START_WIRELESS_SCAN       = "com.retportal.retdrive.ACTION_START_WIRELESS_SCAN"
+        const val ACTION_STOP_WIRELESS             = "com.retportal.retdrive.ACTION_STOP_WIRELESS"
+        const val ACTION_NATIVE_AA_POKE            = "com.retportal.retdrive.ACTION_NATIVE_AA_POKE"
+        const val ACTION_NEARBY_CONNECT             = "com.retportal.retdrive.ACTION_NEARBY_CONNECT"
+        const val ACTION_CHECK_USB                 = "com.retportal.retdrive.ACTION_CHECK_USB"
+        const val ACTION_STOP_SERVICE              = "com.retportal.retdrive.aap.action.STOP_SERVICE"
+        const val ACTION_DISCONNECT                = "com.retportal.retdrive.ACTION_DISCONNECT"
+        const val ACTION_REQUEST_NIGHT_MODE_UPDATE = "com.retportal.retdrive.aap.action.REQUEST_NIGHT_MODE_UPDATE"
+        const val ACTION_NIGHT_MODE_CHANGED      = "com.retportal.retdrive.ACTION_NIGHT_MODE_CHANGED"
+        const val ACTION_ORIENTATION_CHANGED     = "com.retportal.retdrive.ACTION_ORIENTATION_CHANGED"
+        const val ACTION_REFRESH_SENSORS         = "com.retportal.retdrive.aap.action.REFRESH_SENSORS"
+        const val ACTION_RESTART_AUDIO           = "com.retportal.retdrive.aap.action.RESTART_AUDIO"
         /**
          * Sent after the caller has already invoked [CommManager.connect(socket)].
          * The [observeConnectionState] flow observer handles the result — [onStartCommand]
          * does nothing for this action.
          */
-        const val ACTION_CONNECT_SOCKET            = "com.andrerinas.headunitrevived.ACTION_CONNECT_SOCKET"
+        const val ACTION_CONNECT_SOCKET            = "com.retportal.retdrive.ACTION_CONNECT_SOCKET"
 
         /** Max handshake failures on a stale accessory device before forcing AOA re-enumeration. */
         private const val MAX_STALE_ACCESSORY_RETRIES = 1

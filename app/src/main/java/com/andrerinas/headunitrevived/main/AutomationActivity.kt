@@ -67,7 +67,7 @@ class AutomationActivity : AppCompatActivity() {
                 }
                 ContextCompat.startForegroundService(this, exitIntent)
                 // Broadcast a finish request to close MainActivity if it's open
-                sendBroadcast(Intent("com.andrerinas.headunitrevived.ACTION_FINISH_ACTIVITIES"))
+                sendBroadcast(Intent("com.retportal.retdrive.ACTION_FINISH_ACTIVITIES"))
             }
             "nightmode" -> {
                 val state = data.getQueryParameter("state")
@@ -78,32 +78,32 @@ class AutomationActivity : AppCompatActivity() {
 
     private fun handleAction(incomingAction: String?, incomingState: String?) {
         when (incomingAction) {
-            "com.andrerinas.headunitrevived.ACTION_SET_NIGHT_MODE" -> applyNightMode(incomingState)
-            "com.andrerinas.headunitrevived.ACTION_CONNECT" -> {
+            "com.retportal.retdrive.ACTION_SET_NIGHT_MODE" -> applyNightMode(incomingState)
+            "com.retportal.retdrive.ACTION_CONNECT" -> {
                 val autoIntent = Intent(this, AapService::class.java).apply {
                     this.action = AapService.ACTION_CHECK_USB
                 }
                 ContextCompat.startForegroundService(this, autoIntent)
             }
-            "com.andrerinas.headunitrevived.ACTION_DISCONNECT" -> {
+            "com.retportal.retdrive.ACTION_DISCONNECT" -> {
                 val stopIntent = Intent(this, AapService::class.java).apply {
                     this.action = AapService.ACTION_DISCONNECT
                 }
                 ContextCompat.startForegroundService(this, stopIntent)
             }
-            "com.andrerinas.headunitrevived.ACTION_START_SELF_MODE" -> {
+            "com.retportal.retdrive.ACTION_START_SELF_MODE" -> {
                 val selfIntent = Intent(this, AapService::class.java).apply {
                     this.action = AapService.ACTION_START_SELF_MODE
                 }
                 ContextCompat.startForegroundService(this, selfIntent)
             }
-            "com.andrerinas.headunitrevived.ACTION_STOP_SERVICE",
-            "com.andrerinas.headunitrevived.ACTION_EXIT" -> {
+            "com.retportal.retdrive.ACTION_STOP_SERVICE",
+            "com.retportal.retdrive.ACTION_EXIT" -> {
                 val exitIntent = Intent(this, AapService::class.java).apply {
                     this.action = AapService.ACTION_STOP_SERVICE
                 }
                 ContextCompat.startForegroundService(this, exitIntent)
-                sendBroadcast(Intent("com.andrerinas.headunitrevived.ACTION_FINISH_ACTIVITIES").apply {
+                sendBroadcast(Intent("com.retportal.retdrive.ACTION_FINISH_ACTIVITIES").apply {
                     setPackage(packageName)
                 })
             }

@@ -58,7 +58,7 @@ class UsbReceiver(private val mListener: Listener)          // USB Broadcast Rec
     }
 
     companion object {
-        const val ACTION_USB_DEVICE_PERMISSION = "com.andrerinas.headunitrevived" + ".ACTION_USB_DEVICE_PERMISSION"
+        const val ACTION_USB_DEVICE_PERMISSION = "com.retportal.retdrive" + ".ACTION_USB_DEVICE_PERMISSION"
         const val EXTRA_CONNECT = "EXTRA_CONNECT"
 
         fun createPermissionPendingIntent(context: Context): PendingIntent {

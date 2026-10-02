@@ -23,7 +23,7 @@ import com.google.android.material.appbar.MaterialToolbar
 class QuickSettingsFragment : DialogFragment() {
 
     companion object {
-        const val ACTION_SETTINGS_CHANGED = "com.andrerinas.headunitrevived.SETTINGS_CHANGED"
+        const val ACTION_SETTINGS_CHANGED = "com.retportal.retdrive.SETTINGS_CHANGED"
         const val EXTRA_NEEDS_VIEW_RECREATE = "needs_view_recreate"
         const val EXTRA_NEEDS_AUDIO_RESTART = "needs_audio_restart"
         const val EXTRA_SENSOR_REFRESH = "sensor_refresh"

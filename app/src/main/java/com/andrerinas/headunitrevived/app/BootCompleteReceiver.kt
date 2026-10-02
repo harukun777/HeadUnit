@@ -64,7 +64,7 @@ class BootCompleteReceiver : BroadcastReceiver() {
     }
 
     companion object {
-        const val EXTRA_BOOT_START = "com.andrerinas.headunitrevived.EXTRA_BOOT_START"
+        const val EXTRA_BOOT_START = "com.retportal.retdrive.EXTRA_BOOT_START"
 
         private val BOOT_ACTIONS = setOf(
             // Standard Android boot

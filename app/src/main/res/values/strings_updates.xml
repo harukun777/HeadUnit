@@ -1,0 +1,19 @@
+<resources>
+    <string name="update_title">App updates</string>
+    <string name="update_description">Register the HTTPS URL of the update manifest. While the home screen is open, check once a day and download new versions automatically. Android asks you to confirm installation. Updates are deferred while connected to Android Auto.</string>
+    <string name="update_auto">Check and download automatically</string>
+    <string name="update_url">Update manifest URL (HTTPS)</string>
+    <string name="update_save">Save URL</string>
+    <string name="update_saved">Saved.</string>
+    <string name="update_invalid_url">Enter a valid HTTPS URL.</string>
+    <string name="update_no_url">Register and save an update manifest URL first.</string>
+    <string name="update_check">Check for updates now</string>
+    <string name="update_checking">Checking and downloading…</string>
+    <string name="update_current">No compatible newer version is available.</string>
+    <string name="update_ready">A new version has been downloaded. You can install it after disconnecting Android Auto.</string>
+    <string name="update_install">Install downloaded update</string>
+    <string name="update_failed">Update failed: %1$s</string>
+    <string name="update_permission">Allow installation from this app, then return here.</string>
+    <string name="update_connected">Disconnect Android Auto before updating.</string>
+    <string name="update_back">Back</string>
+</resources>

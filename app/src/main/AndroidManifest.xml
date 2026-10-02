@@ -4,6 +4,7 @@
     >
 
     <uses-sdk tools:overrideLibrary="com.google.android.gms.nearby, com.google.android.gms.base, com.google.android.gms.tasks, com.google.android.gms.common" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
     <uses-feature
         android:name="android.hardware.usb.host"
@@ -31,7 +32,7 @@
         android:required="false" />
 
     <permission
-        android:name="com.andrerinas.headunitrevived.permission.NAVIGATION_UPDATE"
+        android:name="com.retportal.retdrive.permission.NAVIGATION_UPDATE"
         android:protectionLevel="signature" />
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -276,11 +277,11 @@
             android:noHistory="true"
             android:taskAffinity="">
             <intent-filter>
-                <action android:name="com.andrerinas.headunitrevived.ACTION_SET_NIGHT_MODE" />
-                <action android:name="com.andrerinas.headunitrevived.ACTION_CONNECT" />
-                <action android:name="com.andrerinas.headunitrevived.ACTION_DISCONNECT" />
-                <action android:name="com.andrerinas.headunitrevived.ACTION_START_SELF_MODE" />
-                <action android:name="com.andrerinas.headunitrevived.ACTION_STOP_SERVICE" />
+                <action android:name="com.retportal.retdrive.ACTION_SET_NIGHT_MODE" />
+                <action android:name="com.retportal.retdrive.ACTION_CONNECT" />
+                <action android:name="com.retportal.retdrive.ACTION_DISCONNECT" />
+                <action android:name="com.retportal.retdrive.ACTION_START_SELF_MODE" />
+                <action android:name="com.retportal.retdrive.ACTION_STOP_SERVICE" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <intent-filter>
@@ -294,6 +295,7 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".update.UpdateActivity" android:exported="false" />
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
