@@ -127,6 +127,7 @@ android {
         // This is scanned at build time from values-XX directories
         buildConfigField("String", "AVAILABLE_LOCALES", "\"${availableLocales.joinToString(",")}\"")
         buildConfigField("String", "DEFAULT_APP_LANGUAGE", "\"\"")
+        buildConfigField("int", "DEFAULT_WIFI_MODE", "2")
 
         externalNativeBuild {
             cmake {
@@ -149,6 +150,7 @@ android {
             dimension = "distribution"
             minSdk = 22
             buildConfigField("String", "DEFAULT_APP_LANGUAGE", "\"ja\"")
+            buildConfigField("int", "DEFAULT_WIFI_MODE", "0")
         }
     }
 

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="lan_connection">Wi-Fi内で接続（ヘルパー不要）</string>
+    <string name="lan_add_ip">スマホのIPを指定</string>
+    <string name="lan_setup">両方の端末を同じWi-Fiに接続してください。スマートフォンのAndroid Auto設定で「バージョン」を10回タップして開発者モードを有効にし、右上のメニューから「ヘッドユニットサーバーを起動」を選びます。スマートフォンのロックを解除したまま、この画面の「検索」を押してください。Android Autoは必要ですが、別の接続ヘルパーは不要です。他の接続モードからは、ホームのWi-Fiボタンを長押しすると開けます。</string>
+    <string name="lan_not_found">スマートフォンのヘッドユニットサーバーが起動しているか、両方の端末が同じWi-Fiか確認してください。ゲストWi-Fiや端末間通信の遮断設定では接続できません。スマートフォンのWi-FiのIPv4アドレスを指定して試してください。自動検索は近隣の最大1022アドレスが対象です。それ以外はIPを直接指定できます。</string>
+</resources>

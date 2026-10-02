@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="lan_connection">Wi-Fi LAN (no helper)</string>
+    <string name="lan_add_ip">Enter phone IP</string>
+    <string name="lan_setup">Connect both devices to the same Wi-Fi. On the phone, open Android Auto settings, tap Version 10 times to enable developer mode, then use the top-right menu to start the head unit server. Keep the phone unlocked and tap Scan here. Android Auto is required; a separate connection helper is not. To open this screen from another connection mode, long-press Wi-Fi on the home screen.</string>
+    <string name="lan_not_found">Check that the phone head unit server is running and both devices share the same Wi-Fi. Guest Wi-Fi / client isolation can block connections. Try entering the phone Wi-Fi IPv4 address. Automatic scanning covers at most 1022 nearby addresses; other addresses can be entered manually.</string>
+</resources>

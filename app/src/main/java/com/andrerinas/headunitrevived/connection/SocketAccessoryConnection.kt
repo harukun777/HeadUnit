@@ -83,7 +83,11 @@ class SocketAccessoryConnection(private val ip: String, private val port: Int, p
             if (!transport.isConnected) {
                 val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (InetAddress.getByName(ip).isLoopbackAddress) {
+                    // Loopback must stay on this device.
+                } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP_MR1) {
+                    WifiLan(context).bind(transport)
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     var netToBind: android.net.Network? = null
                     try {
                         var wifiNetwork: android.net.Network? = null

@@ -28,6 +28,7 @@ import kotlinx.coroutines.launch
 import com.andrerinas.headunitrevived.R
 import com.andrerinas.headunitrevived.aap.AapService
 import com.andrerinas.headunitrevived.connection.NetworkDiscovery
+import com.andrerinas.headunitrevived.connection.WifiLan
 import com.andrerinas.headunitrevived.utils.AppLog
 import com.andrerinas.headunitrevived.utils.Settings
 import com.andrerinas.headunitrevived.utils.changeLastBit
@@ -50,11 +51,11 @@ class NetworkListFragment : Fragment(), NetworkDiscovery.Listener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        networkDiscovery = NetworkDiscovery(requireContext(), this)
+        networkDiscovery = NetworkDiscovery(requireContext(), this, discoverHelper = false)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val view = inflater.inflate(R.layout.fragment_list, container, false)
+        val view = inflater.inflate(R.layout.fragment_network_list, container, false)
         val recyclerView = view.findViewById<RecyclerView>(android.R.id.list)
         toolbar = view.findViewById(R.id.toolbar)
         
@@ -89,7 +90,9 @@ class NetworkListFragment : Fragment(), NetworkDiscovery.Listener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        toolbar.title = getString(R.string.wifi)
+        toolbar.title = getString(R.string.lan_connection)
+        view.findViewById<View>(R.id.lan_scan).setOnClickListener { startScan() }
+        view.findViewById<View>(R.id.lan_add).setOnClickListener { showAddAddressDialog() }
         toolbar.setNavigationOnClickListener {
             findNavController().popBackStack()
         }
@@ -155,6 +158,10 @@ class NetworkListFragment : Fragment(), NetworkDiscovery.Listener {
             try { socket?.close() } catch (e: Exception) {}
             return
         }
+        if (view == null || activity == null) {
+            try { socket?.close() } catch (_: Exception) {}
+            return
+        }
         activity?.runOnUiThread {
             // Save immediately so it stays in the list permanently
             try {
@@ -194,28 +201,17 @@ class NetworkListFragment : Fragment(), NetworkDiscovery.Listener {
         activity?.runOnUiThread {
             if (scanDialog?.isShowing == true) {
                 scanDialog?.dismiss()
-                if (adapter.addressList.size <= 2) { // Only localhost and current IP
-                    Toast.makeText(context, getString(R.string.no_devices_found), Toast.LENGTH_SHORT).show()
-                }
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(R.string.no_devices_found)
+                    .setMessage(R.string.lan_not_found)
+                    .setPositiveButton(R.string.add_new) { _, _ -> showAddAddressDialog() }
+                    .setNegativeButton(android.R.string.ok, null).show()
             }
         }
     }
     
     private fun showAddAddressDialog() {
-        var ip: InetAddress? = null
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val activeNetwork = connectivityManager.activeNetwork
-            val linkProperties = connectivityManager.getLinkProperties(activeNetwork)
-            ip = linkProperties?.linkAddresses?.find { it.address is Inet4Address }?.address
-        } else {
-            val wifiManager = App.provide(requireContext()).wifiManager
-            @Suppress("DEPRECATION")
-            val currentIp = wifiManager.connectionInfo.ipAddress
-            if (currentIp != 0) {
-                ip = currentIp.toInetAddress()
-            }
-        }
-        com.andrerinas.headunitrevived.main.AddNetworkAddressDialog.show(ip, childFragmentManager)
+        AddNetworkAddressDialog.show(WifiLan(requireContext()).address(), childFragmentManager)
     }
 
     override fun onResume() {
@@ -241,24 +237,20 @@ class NetworkListFragment : Fragment(), NetworkDiscovery.Listener {
     }
 
     private fun updateCurrentAddress() {
-        var ipAddress: InetAddress? = null
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { // API 23+ (for getActiveNetwork)
-            val activeNetwork = connectivityManager.activeNetwork
-            val linkProperties = connectivityManager.getLinkProperties(activeNetwork)
-            ipAddress = linkProperties?.linkAddresses?.find { it.address is Inet4Address }?.address
-        } else { // API 19, 20, 21, 22
-            val wifiManager = App.provide(requireContext()).wifiManager
-            @Suppress("DEPRECATION")
-            val currentIp = wifiManager.connectionInfo.ipAddress
-            if (currentIp != 0) {
-                ipAddress = currentIp.toInetAddress()
+        val gateway = context?.let { WifiLan(it).gateway() }
+        activity?.runOnUiThread {
+            if (view != null) {
+                adapter.currentAddress = gateway ?: ""
+                adapter.loadAddresses()
             }
         }
+    }
 
-        activity?.runOnUiThread {
-            adapter.currentAddress = ipAddress?.changeLastBit(1)?.hostAddress ?: ""
-            adapter.loadAddresses()
-        }
+    override fun onDestroyView() {
+        networkDiscovery.stop()
+        scanDialog?.dismiss()
+        scanDialog = null
+        super.onDestroyView()
     }
 
     fun addAddress(ip: InetAddress) {

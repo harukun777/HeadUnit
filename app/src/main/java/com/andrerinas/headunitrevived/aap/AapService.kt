@@ -2135,7 +2135,7 @@ class AapService : Service(), UsbReceiver.Listener {
                     if (wirelessServer != null && !commManager.isConnected) startDiscovery()
                 }
             }
-        })
+        }, discoverHelper = mode == 2)
         networkDiscovery?.startScan()
     }
 
