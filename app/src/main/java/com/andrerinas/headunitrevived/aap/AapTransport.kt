@@ -272,7 +272,11 @@ class AapTransport(
         pollHandler?.sendEmptyMessage(MSG_POLL)
     }
 
+    var handshakeFailure: String = ""
+        private set
+
     private fun handshake(connection: AccessoryConnection): Boolean {
+        handshakeFailure = "Android Auto version exchange failed (no complete VERSION_RESPONSE)"
         try {
             // Increased delay for AA 16.4+ stability - skip for Nearby (single message)
             if (!connection.isSingleMessage) {
@@ -296,6 +300,11 @@ class AapTransport(
             }
 
             AppLog.d("Handshake: Starting version request. TS: ${SystemClock.elapsedRealtime()}")
+            val frameReader = if (connection is com.andrerinas.headunitrevived.connection.SocketAccessoryConnection)
+                HandshakeFrameReader(
+                    { bytes, length, timeout -> connection.recvBlocking(bytes, length, timeout, false) },
+                    { SystemClock.elapsedRealtime() }
+                ) else null
             val version = Messages.versionRequest
             var ret = -1
             var attempt = 0
@@ -325,11 +334,12 @@ class AapTransport(
                 // "version response received" would hand a random payload to the SSL layer and
                 // cause a 15 s timeout. Instead, discard unexpected messages and keep reading
                 // until the deadline expires.
-                val recvDeadline = SystemClock.elapsedRealtime() + 2000
+                val recvDeadline = if (frameReader != null) versionDeadline else SystemClock.elapsedRealtime() + 2000
                 while (SystemClock.elapsedRealtime() < recvDeadline) {
                     val remaining = (recvDeadline - SystemClock.elapsedRealtime())
                         .toInt().coerceAtLeast(100)
-                    ret = connection.recvBlocking(buffer, buffer.size, remaining, false)
+                    ret = frameReader?.read(buffer, recvDeadline)
+                        ?: connection.recvBlocking(buffer, buffer.size, remaining, false)
                     if (ret <= 0) break  // timeout or error — fall through to outer retry
                     if (ret >= 6
                         && buffer[0] == 0.toByte()
@@ -358,6 +368,7 @@ class AapTransport(
             AppLog.i("Handshake: Version response recv ret: %d", ret)
 
             AppLog.d("Handshake: Starting SSL handshake via performHandshake(). TS: ${SystemClock.elapsedRealtime()}")
+            handshakeFailure = "Android Auto TLS handshake failed"
             if (!ssl.performHandshake(connection)) {
                 AppLog.e("Handshake: SSL performHandshake failed.")
                 return false
@@ -379,8 +390,10 @@ class AapTransport(
             AppLog.i("Handshake: Status OK sent: %d", ret)
             AppLog.d("Handshake: Handshake successful. TS: ${SystemClock.elapsedRealtime()}")
 
+            handshakeFailure = ""
             return true
         } catch (e: Exception) {
+            handshakeFailure += ": ${e.message ?: e.javaClass.simpleName}"
             AppLog.e("Handshake failed with exception", e)
             return false
         }

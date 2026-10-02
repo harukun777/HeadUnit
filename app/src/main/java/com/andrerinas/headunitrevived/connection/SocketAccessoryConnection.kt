@@ -17,6 +17,8 @@ import java.net.SocketTimeoutException
 class SocketAccessoryConnection(private val ip: String, private val port: Int, private val context: Context) : AccessoryConnection {
     private var output: OutputStream? = null
     private var input: DataInputStream? = null
+    var lastError: String? = null
+        private set
     private var transport: Socket
 
     init {
@@ -79,6 +81,8 @@ class SocketAccessoryConnection(private val ip: String, private val port: Int, p
         get() = transport.isConnected
 
     override suspend fun connect(): Boolean = withContext(Dispatchers.IO) {
+        lastError = null
+        AppLog.i("WiFi: Connecting to $ip:$port")
         try {
             if (!transport.isConnected) {
                 val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -201,9 +205,12 @@ class SocketAccessoryConnection(private val ip: String, private val port: Int, p
             // BufferedInputStream + readFully + timeout = internal buffer state corruption.
             input = DataInputStream(transport.getInputStream())
             output = transport.getOutputStream()
+            AppLog.i("WiFi: TCP connected to $ip:$port; Android Auto handshake pending")
             return@withContext true
         } catch (e: IOException) {
-            AppLog.e(e)
+            lastError = "$ip:$port: ${e.message ?: e.javaClass.simpleName}"
+            AppLog.e("WiFi TCP connection failed: $lastError", e)
+            try { transport.close() } catch (_: IOException) {}
             return@withContext false
         }
     }

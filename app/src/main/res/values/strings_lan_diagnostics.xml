@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="lan_connecting_tcp">Connecting to phone over Wi-Fi…</string>
+    <string name="lan_waiting_aa">Wi-Fi connected; waiting for Android Auto response…</string>
+    <string name="lan_connection_failed">Android Auto connection failed</string>
+    <string name="lan_failure_details">%1$s\n\nStop and restart the head unit server on the phone, unlock the phone, and try again. If this continues, use Settings → Logs: choose file logging, start capture, retry the connection, then export the logs. TCP access alone does not confirm Android Auto compatibility.</string>
+</resources>

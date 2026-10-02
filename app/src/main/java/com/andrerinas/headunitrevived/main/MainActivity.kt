@@ -253,6 +253,8 @@ class MainActivity : BaseActivity() {
         if (commManager.isConnected) return
         AppLog.i("Auto-connect: begin ($reason, mode=$mode)")
         autoConnectInProgress = true
+        lanConnectionAttempt = reason.startsWith("manual WiFi")
+        if (lanConnectionAttempt) lastLanStatus = getString(R.string.lan_connecting_tcp)
         autoConnectMode = mode
         // Seed hasAdvancedToActiveState from the current connection state. If
         // something else (e.g. AapService responding to a USB attach) already
@@ -265,7 +267,7 @@ class MainActivity : BaseActivity() {
         hasAdvancedToActiveState = currentState is CommManager.ConnectionState.Connecting ||
                 currentState is CommManager.ConnectionState.Connected ||
                 currentState is CommManager.ConnectionState.StartingTransport
-        autoConnectStatusText = customStatusText
+        autoConnectStatusText = customStatusText ?: if (lanConnectionAttempt) lastLanStatus else null
         // Hand the status text off to AapProjectionActivity so its own loading
         // screen continues to show the same context-specific label after the
         // handshake completes and AAP takes over the UI. AAP reads and clears
@@ -294,6 +296,7 @@ class MainActivity : BaseActivity() {
     private fun cancelAutoConnect() {
         if (!autoConnectInProgress) return
         AppLog.i("Auto-connect: cancelled by user")
+        lanConnectionAttempt = false
         // disconnect() handles all states including the Connecting state where
         // ACTION_DISCONNECT in AapService used to be a no-op. Setting state to
         // Disconnected here also feeds the observer, but we end the UI
@@ -325,6 +328,10 @@ class MainActivity : BaseActivity() {
                             // was requested); ensure it is in case the request raced with
                             // setContentView or the activity was recreated mid-attempt.
                             if (autoConnectInProgress) {
+                                if (lanConnectionAttempt) {
+                                    updateConnectionStatus(getString(if (state is CommManager.ConnectionState.Connecting)
+                                        R.string.lan_connecting_tcp else R.string.lan_waiting_aa))
+                                }
                                 showAutoConnectUi()
                             }
                         }
@@ -359,7 +366,21 @@ class MainActivity : BaseActivity() {
         }
     }
 
+    private var lanConnectionAttempt = false
+    private var lastLanStatus = ""
+
+    private fun updateConnectionStatus(text: String) {
+        lastLanStatus = text
+        autoConnectStatusText = text
+        listOf(R.id.auto_connect_loading_default_text, R.id.auto_connect_loading_custom_text,
+            R.id.auto_connect_pill_text).forEach { id ->
+            findViewById<android.widget.TextView>(id)?.text = text
+        }
+    }
+
     private fun endAutoConnect(success: Boolean) {
+        val showLanFailure = lanConnectionAttempt && !success
+        lanConnectionAttempt = false
         autoConnectWatchdog?.cancel()
         autoConnectWatchdog = null
         autoConnectInProgress = false
@@ -384,6 +405,13 @@ class MainActivity : BaseActivity() {
             autoConnectKenBurnsAnim = null
         } else {
             hideAutoConnectOverlay()
+        }
+        if (showLanFailure && !isFinishing) {
+            val detail = App.provide(this).commManager.lastConnectionFailure ?: lastLanStatus
+            com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.lan_connection_failed)
+                .setMessage(getString(R.string.lan_failure_details, detail))
+                .setPositiveButton(android.R.string.ok, null).show()
         }
     }
 
@@ -418,6 +446,7 @@ class MainActivity : BaseActivity() {
             delay(AUTO_CONNECT_WATCHDOG_MS)
             if (autoConnectInProgress) {
                 AppLog.w("Auto-connect overlay: watchdog timeout, hiding")
+                if (lanConnectionAttempt) App.provide(this@MainActivity).commManager.disconnect()
                 endAutoConnect(success = false)
             }
         }

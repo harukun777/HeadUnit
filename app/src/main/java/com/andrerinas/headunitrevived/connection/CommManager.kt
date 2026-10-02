@@ -140,6 +140,10 @@ class CommManager(
     /** Public read-only view of [_connectionState]. */
     val connectionState = _connectionState.asStateFlow()
 
+    // StateFlow may conflate Error -> Disconnected. Keep the diagnosis until the next attempt.
+    @Volatile var lastConnectionFailure: String? = null
+        private set
+
     /**
      * `true` while a physical connection exists, regardless of whether the AAP transport
      * handshake has completed. Covers [ConnectionState.Connected], [ConnectionState.StartingTransport],
@@ -225,6 +229,7 @@ class CommManager(
         _disconnectJob?.join()
 
         try {
+            lastConnectionFailure = null
             _connectionState.emit(ConnectionState.Connecting)
             _connection?.disconnect()
             _connection = SocketAccessoryConnection(socket, context)
@@ -236,9 +241,11 @@ class CommManager(
                 }
                 _connectionState.emit(ConnectionState.Connected)
             } else {
+                lastConnectionFailure = (_connection as? SocketAccessoryConnection)?.lastError ?: "TCP connection failed"
                 _connectionState.emit(ConnectionState.Disconnected())
             }
         } catch (e: Exception) {
+            lastConnectionFailure = "Connection failed: ${e.message}"
             _connectionState.emit(ConnectionState.Error("Connection failed: ${e.message}"))
             disconnect()
         }
@@ -257,6 +264,7 @@ class CommManager(
         _disconnectJob?.join()
 
         try {
+            lastConnectionFailure = null
             _connectionState.emit(ConnectionState.Connecting)
             _connection?.disconnect()
             _connection = SocketAccessoryConnection(ip, port, context)
@@ -265,9 +273,11 @@ class CommManager(
                 settings.saveLastConnection(type = Settings.CONNECTION_TYPE_WIFI, ip = ip)
                 _connectionState.emit(ConnectionState.Connected)
             } else {
+                lastConnectionFailure = (_connection as? SocketAccessoryConnection)?.lastError ?: "TCP connection failed"
                 _connectionState.emit(ConnectionState.Disconnected())
             }
         } catch (e: Exception) {
+            lastConnectionFailure = "Connection failed: ${e.message}"
             _connectionState.emit(ConnectionState.Error("Connection failed: ${e.message}"))
             disconnect()
         }
@@ -320,6 +330,8 @@ class CommManager(
                 if (_transport?.startHandshake(_connection!!) == true) {
                     _connectionState.emit(ConnectionState.HandshakeComplete)
                 } else {
+                    lastConnectionFailure = _transport?.handshakeFailure?.takeIf { it.isNotEmpty() }
+                        ?: lastConnectionFailure ?: "Android Auto handshake failed"
                     _connectionState.emit(ConnectionState.Error("Handshake failed"))
                     disconnect()
                 }
@@ -327,6 +339,7 @@ class CommManager(
                 _connectionState.emit(ConnectionState.Error("Starting handshake without connection"))
             }
         } catch (e: Exception) {
+            lastConnectionFailure = "Android Auto handshake failed: ${e.message}"
             _connectionState.emit(ConnectionState.Error("Handshake failed: ${e.message}"))
             disconnect()
         }
@@ -372,6 +385,11 @@ class CommManager(
      */
     private fun transportedQuited(isClean: Boolean) {
         val wasUserExit = _transport?.wasUserExit ?: false
+        if (_connectionState.value is ConnectionState.StartingTransport) {
+            // quit() notifies us before startHandshake() returns and cleanup releases _transport.
+            lastConnectionFailure = _transport?.handshakeFailure?.takeIf { it.isNotEmpty() }
+                ?: "Android Auto handshake failed"
+        }
         _connectionState.value = ConnectionState.Disconnected(isClean, isUserExit = wasUserExit)
         // Transport already quit on its own — no ByeByeRequest needed (connection is dead).
         _disconnectJob = _scope.launch { doDisconnect(sendByeBye = false) }

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="lan_connecting_tcp">Wi-Fiでスマートフォンに接続中…</string>
+    <string name="lan_waiting_aa">Wi-Fi接続済み・Android Autoの応答を確認中…</string>
+    <string name="lan_connection_failed">Android Autoに接続できませんでした</string>
+    <string name="lan_failure_details">%1$s\n\nスマートフォンのヘッドユニットサーバーを停止して再起動し、画面のロックを解除して接続し直してください。続く場合は、設定のログソースを「ファイルへ直接」に変更し、「ログ取得を開始する」→接続を再試行→「ログをエクスポート」で記録してください。Wi-Fiの接続成功だけではAndroid Autoとの接続成功を意味しません。</string>
+</resources>
