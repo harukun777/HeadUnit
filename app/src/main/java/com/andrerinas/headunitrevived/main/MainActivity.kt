@@ -337,6 +337,7 @@ class MainActivity : BaseActivity() {
                         }
                         is CommManager.ConnectionState.HandshakeComplete,
                         is CommManager.ConnectionState.TransportStarted -> {
+                            launchProjectionIfReady()
                             // AapProjectionActivity is launching (HandshakeComplete) or
                             // has launched (TransportStarted). Hide our overlay so we
                             // don't keep video/animation resources alive while AAP
@@ -871,6 +872,8 @@ class MainActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
+        isForeground = true
+        projectionLaunchPending = false
         setFullscreen()
 
         checkSetupFlow()
@@ -879,18 +882,32 @@ class MainActivity : BaseActivity() {
         ContextCompat.registerReceiver(this, orientationReceiver, android.content.IntentFilter(AapService.ACTION_ORIENTATION_CHANGED), ContextCompat.RECEIVER_NOT_EXPORTED)
         isOrientationReceiverRegistered = true
 
-        // If an Android Auto session is active, bring the projection activity to front
-        if (App.provide(this).commManager.isConnected && !App.isPiPActive && !AapProjectionActivity.isForeground) {
-            AppLog.i("MainActivity: Active session detected, bringing projection to front")
-            val aapIntent = AapProjectionActivity.intent(this).apply {
+        launchProjectionIfReady()
+    }
+
+    private var projectionLaunchPending = false
+
+    private fun launchProjectionIfReady() {
+        val state = App.provide(this).commManager.connectionState.value
+        val ready = state is CommManager.ConnectionState.HandshakeComplete ||
+            state is CommManager.ConnectionState.TransportStarted
+        if (!ready || !isForeground || isFinishing || App.isPiPActive ||
+            AapProjectionActivity.isForeground || projectionLaunchPending) return
+        projectionLaunchPending = true
+        AppLog.i("MainActivity: Starting projection from foreground after handshake")
+        try {
+            startActivity(AapProjectionActivity.intent(this).apply {
                 putExtra(AapProjectionActivity.EXTRA_FOCUS, true)
                 addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-            }
-            startActivity(aapIntent)
+            })
+        } catch (e: Exception) {
+            projectionLaunchPending = false
+            AppLog.e("Foreground projection launch failed", e)
         }
     }
 
     override fun onPause() {
+        isForeground = false
         super.onPause()
         if (isOrientationReceiverRegistered) {
             unregisterReceiver(orientationReceiver)
@@ -947,6 +964,9 @@ class MainActivity : BaseActivity() {
     }
 
     companion object {
+        @Volatile var isForeground = false
+            private set
+
         private const val permissionRequestCode = 97
         const val EXTRA_LAUNCH_SOURCE = "launch_source"
 

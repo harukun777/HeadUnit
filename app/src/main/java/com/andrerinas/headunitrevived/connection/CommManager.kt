@@ -111,6 +111,8 @@ class CommManager(
      *  failing child from cancelling the rest. */
     private val _scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
+    private val connectionAttemptGate = ConnectionAttemptGate()
+
     private val lastKeyEvents = mutableMapOf<Int, Long>()
 
     private val _connectionState = MutableStateFlow<ConnectionState>(ConnectionState.Disconnected())
@@ -176,40 +178,44 @@ class CommManager(
      * connection so it can be auto-reconnected on the next launch.
      */
     suspend fun connect(device: UsbDevice) = withContext(Dispatchers.IO) {
-        // Another caller already started the connection — do nothing.
-        if (_connectionState.value is ConnectionState.Connecting)
-            return@withContext
-
-
-        val usbManager = context.getSystemService(Context.USB_SERVICE) as UsbManager
-        if (!usbManager.hasPermission(device)) {
-            _connectionState.emit(ConnectionState.Error("USB permission not granted for device"))
+        if (!connectionAttemptGate.acquire { isConnected || _connectionState.value is ConnectionState.Connecting }) {
+            AppLog.i("Ignoring duplicate connection attempt; current session is active")
             return@withContext
         }
-
-        // Wait for any in-progress cleanup to finish before opening the USB device.
-        // Without this, openDevice() on the same hardware can return null because the previous
-        // UsbDeviceConnection hasn't been close()d yet.
-        _disconnectJob?.join()
-
         try {
-            _connectionState.emit(ConnectionState.Connecting)
-            _connection?.disconnect()
-            _connection = if (settings.useLibusb) {
-                LibusbAccessoryConnection(usbManager, device)
-            } else {
-                UsbAccessoryConnection(usbManager, device)
+
+            val usbManager = context.getSystemService(Context.USB_SERVICE) as UsbManager
+            if (!usbManager.hasPermission(device)) {
+                _connectionState.emit(ConnectionState.Error("USB permission not granted for device"))
+                return@withContext
             }
 
-            if (_connection?.connect() ?: false) {
-                settings.saveLastConnection(type = Settings.CONNECTION_TYPE_USB, usbDevice = UsbDeviceCompat.getUniqueName(device))
-                _connectionState.emit(ConnectionState.Connected)
-            } else {
-                _connectionState.emit(ConnectionState.Disconnected())
+            // Wait for any in-progress cleanup to finish before opening the USB device.
+            // Without this, openDevice() on the same hardware can return null because the previous
+            // UsbDeviceConnection hasn't been close()d yet.
+            _disconnectJob?.join()
+
+            try {
+                _connectionState.emit(ConnectionState.Connecting)
+                _connection?.disconnect()
+                _connection = if (settings.useLibusb) {
+                    LibusbAccessoryConnection(usbManager, device)
+                } else {
+                    UsbAccessoryConnection(usbManager, device)
+                }
+
+                if (_connection?.connect() ?: false) {
+                    settings.saveLastConnection(type = Settings.CONNECTION_TYPE_USB, usbDevice = UsbDeviceCompat.getUniqueName(device))
+                    _connectionState.emit(ConnectionState.Connected)
+                } else {
+                    _connectionState.emit(ConnectionState.Disconnected())
+                }
+            } catch (e: Exception) {
+                _connectionState.emit(ConnectionState.Error("Connection failed: ${e.message}"))
+                disconnect()
             }
-        } catch (e: Exception) {
-            _connectionState.emit(ConnectionState.Error("Connection failed: ${e.message}"))
-            disconnect()
+        } finally {
+            connectionAttemptGate.release()
         }
     }
 
@@ -221,33 +227,38 @@ class CommManager(
      * sets up the AAP framing layer.
      */
     suspend fun connect(socket: Socket) = withContext(Dispatchers.IO) {
-        // Another caller already started the connection — do nothing.
-        if (_connectionState.value is ConnectionState.Connecting)
+        if (!connectionAttemptGate.acquire { isConnected || _connectionState.value is ConnectionState.Connecting }) {
+            AppLog.i("Ignoring duplicate connection attempt; current session is active")
+            try { socket.close() } catch (_: Exception) {}
             return@withContext
-
-
-        _disconnectJob?.join()
-
+        }
         try {
-            lastConnectionFailure = null
-            _connectionState.emit(ConnectionState.Connecting)
-            _connection?.disconnect()
-            _connection = SocketAccessoryConnection(socket, context)
 
-            if (_connection?.connect() ?: false) {
-                // [FIX] Don't overwrite NEARBY connection type with WIFI + localhost IP (::1)
-                if (socket !is NearbySocket) {
-                    settings.saveLastConnection(type = Settings.CONNECTION_TYPE_WIFI, ip = socket.inetAddress?.hostAddress ?: "")
+            _disconnectJob?.join()
+
+            try {
+                lastConnectionFailure = null
+                _connectionState.emit(ConnectionState.Connecting)
+                _connection?.disconnect()
+                _connection = SocketAccessoryConnection(socket, context)
+
+                if (_connection?.connect() ?: false) {
+                    // [FIX] Don't overwrite NEARBY connection type with WIFI + localhost IP (::1)
+                    if (socket !is NearbySocket) {
+                        settings.saveLastConnection(type = Settings.CONNECTION_TYPE_WIFI, ip = socket.inetAddress?.hostAddress ?: "")
+                    }
+                    _connectionState.emit(ConnectionState.Connected)
+                } else {
+                    lastConnectionFailure = (_connection as? SocketAccessoryConnection)?.lastError ?: "TCP connection failed"
+                    _connectionState.emit(ConnectionState.Disconnected())
                 }
-                _connectionState.emit(ConnectionState.Connected)
-            } else {
-                lastConnectionFailure = (_connection as? SocketAccessoryConnection)?.lastError ?: "TCP connection failed"
-                _connectionState.emit(ConnectionState.Disconnected())
+            } catch (e: Exception) {
+                lastConnectionFailure = "Connection failed: ${e.message}"
+                _connectionState.emit(ConnectionState.Error("Connection failed: ${e.message}"))
+                disconnect()
             }
-        } catch (e: Exception) {
-            lastConnectionFailure = "Connection failed: ${e.message}"
-            _connectionState.emit(ConnectionState.Error("Connection failed: ${e.message}"))
-            disconnect()
+        } finally {
+            connectionAttemptGate.release()
         }
     }
 
@@ -257,29 +268,33 @@ class CommManager(
      * Used by the manual IP entry flow and the NSD-discovered device list.
      */
     suspend fun connect(ip: String, port: Int) = withContext(Dispatchers.IO) {
-        // Another caller already started the connection — do nothing.
-        if (_connectionState.value is ConnectionState.Connecting)
+        if (!connectionAttemptGate.acquire { isConnected || _connectionState.value is ConnectionState.Connecting }) {
+            AppLog.i("Ignoring duplicate connection attempt; current session is active")
             return@withContext
-
-        _disconnectJob?.join()
-
+        }
         try {
-            lastConnectionFailure = null
-            _connectionState.emit(ConnectionState.Connecting)
-            _connection?.disconnect()
-            _connection = SocketAccessoryConnection(ip, port, context)
+            _disconnectJob?.join()
 
-            if (_connection?.connect() ?: false) {
-                settings.saveLastConnection(type = Settings.CONNECTION_TYPE_WIFI, ip = ip)
-                _connectionState.emit(ConnectionState.Connected)
-            } else {
-                lastConnectionFailure = (_connection as? SocketAccessoryConnection)?.lastError ?: "TCP connection failed"
-                _connectionState.emit(ConnectionState.Disconnected())
+            try {
+                lastConnectionFailure = null
+                _connectionState.emit(ConnectionState.Connecting)
+                _connection?.disconnect()
+                _connection = SocketAccessoryConnection(ip, port, context)
+
+                if (_connection?.connect() ?: false) {
+                    settings.saveLastConnection(type = Settings.CONNECTION_TYPE_WIFI, ip = ip)
+                    _connectionState.emit(ConnectionState.Connected)
+                } else {
+                    lastConnectionFailure = (_connection as? SocketAccessoryConnection)?.lastError ?: "TCP connection failed"
+                    _connectionState.emit(ConnectionState.Disconnected())
+                }
+            } catch (e: Exception) {
+                lastConnectionFailure = "Connection failed: ${e.message}"
+                _connectionState.emit(ConnectionState.Error("Connection failed: ${e.message}"))
+                disconnect()
             }
-        } catch (e: Exception) {
-            lastConnectionFailure = "Connection failed: ${e.message}"
-            _connectionState.emit(ConnectionState.Error("Connection failed: ${e.message}"))
-            disconnect()
+        } finally {
+            connectionAttemptGate.release()
         }
     }
 

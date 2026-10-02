@@ -932,6 +932,10 @@ class AapService : Service(), UsbReceiver.Listener {
     }
 
     private fun launchAapProjectionActivity() {
+        if (MainActivity.isForeground) {
+            AppLog.i("Projection launch delegated to foreground MainActivity")
+            return
+        }
         if (App.isPiPActive) {
             AppLog.i("AapService: Skipping projection launch because PiP is active")
             return

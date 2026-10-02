@@ -124,6 +124,7 @@ class NetworkListFragment : Fragment(), NetworkDiscovery.Listener {
     }
     
     private fun startScan() {
+        if (App.provide(requireContext()).commManager.isConnected) return
         showScanDialog()
         networkDiscovery.startScan()
     }
@@ -173,6 +174,7 @@ class NetworkListFragment : Fragment(), NetworkDiscovery.Listener {
 
             // Auto-connect to the first found device during a manual scan
             if (scanDialog?.isShowing == true) {
+                networkDiscovery.stop()
                 scanDialog?.dismiss()
                 Toast.makeText(context, getString(R.string.found_connecting, ip), Toast.LENGTH_SHORT).show()
 
