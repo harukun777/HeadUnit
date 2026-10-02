@@ -10,6 +10,8 @@ plugins {
 }
 
 dependencies {
+    // Backport Java APIs used by dependencies (including ZXing) to older Android devices.
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
     // Conscrypt
     implementation("org.conscrypt:conscrypt-android:2.5.3")
 
@@ -124,6 +126,7 @@ android {
         // Store available locales in BuildConfig for runtime access
         // This is scanned at build time from values-XX directories
         buildConfigField("String", "AVAILABLE_LOCALES", "\"${availableLocales.joinToString(",")}\"")
+        buildConfigField("String", "DEFAULT_APP_LANGUAGE", "\"\"")
 
         externalNativeBuild {
             cmake {
@@ -142,6 +145,16 @@ android {
             dimension = "distribution"
             // Default minSdk 16 from defaultConfig is used
         }
+        create("android51") {
+            dimension = "distribution"
+            minSdk = 22
+            buildConfigField("String", "DEFAULT_APP_LANGUAGE", "\"ja\"")
+        }
+    }
+
+    sourceSets.getByName("android51") {
+        java.srcDir("src/github/java")
+        manifest.srcFile("src/github/AndroidManifest.xml")
     }
 
     signingConfigs {
@@ -192,6 +205,7 @@ android {
     }
 
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }

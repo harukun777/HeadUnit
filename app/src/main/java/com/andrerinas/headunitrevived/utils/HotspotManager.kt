@@ -127,6 +127,7 @@ object HotspotManager {
         }
     }
 
+    @androidx.annotation.RequiresApi(Build.VERSION_CODES.R)
     private fun tryTetheringManager(context: Context, enabled: Boolean): Boolean {
         try {
             val tm = context.getSystemService("tethering") ?: return false

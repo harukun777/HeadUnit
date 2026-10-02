@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="copyright_label">Copyright</string>
+    <string name="loading_media_downloads">Select from Downloads</string>
+    <string name="loading_media_app_folder">Select from app folder</string>
+    <string name="native_aa_wifi_required">Native Android Auto requires Wi-Fi. Please turn it on.</string>
+    <string name="no_paired_bluetooth_devices">No paired Bluetooth devices found</string>
+    <string name="unknown_device">Unknown device</string>
+    <string name="searching_for_device">Searching for %1$s…</string>
+    <string name="pip_failed">Picture-in-picture failed: %1$s</string>
+    <string name="key_test_prompt">Press any key to test…</string>
+    <string name="key_test_result">Key: %1$s (%2$d) — %3$s</string>
+    <string name="key_action_down">Pressed</string>
+    <string name="key_action_up">Released</string>
+    <string name="no_loading_media_title">No files found</string>
+    <string name="no_loading_media_downloads">No images or videos found in Downloads:\n%1$s\n\nCopy your file to this directory.</string>
+    <string name="no_loading_media_app_folder">No media files found in the app folder:\n%1$s\n\nCopy your startup image or video to this directory.</string>
+    <string name="service_channel_name">Headunit Service</string>
+    <string name="service_channel_description">Persistent service notification</string>
+    <string name="media_channel_name">Media Playback</string>
+    <string name="boot_channel_name">Boot Auto-Start</string>
+    <string name="boot_channel_description">Shown once after boot to open the app</string>
+</resources>

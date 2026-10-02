@@ -618,11 +618,11 @@ class HomeFragment : Fragment() {
 
         val bondedDevices = adapter.bondedDevices?.toList() ?: emptyList()
         if (bondedDevices.isEmpty()) {
-            Toast.makeText(requireContext(), "No paired Bluetooth devices found", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), R.string.no_paired_bluetooth_devices, Toast.LENGTH_SHORT).show()
             return
         }
 
-        val deviceNames = bondedDevices.map { it.name ?: "Unknown Device" }.toTypedArray()
+        val deviceNames = bondedDevices.map { it.name ?: getString(R.string.unknown_device) }.toTypedArray()
 
 
         activeDialog = MaterialAlertDialogBuilder(requireContext(), R.style.DarkAlertDialog)
@@ -640,7 +640,7 @@ class HomeFragment : Fragment() {
                     putExtra(AapService.EXTRA_MAC, device.address)
                 }
                 ContextCompat.startForegroundService(requireContext(), intent)
-                Toast.makeText(requireContext(), "Searching for ${device.name}...", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.searching_for_device, device.name ?: getString(R.string.unknown_device)), Toast.LENGTH_SHORT).show()
             }
             .setNegativeButton(R.string.cancel, null)
             .show()
@@ -673,7 +673,7 @@ class HomeFragment : Fragment() {
             override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                 val view = convertView ?: LayoutInflater.from(context).inflate(R.layout.list_item_nearby, parent, false)
                 val endpoint = getItem(position)
-                view.findViewById<TextView>(R.id.deviceName).text = endpoint?.name ?: "Unknown"
+                view.findViewById<TextView>(R.id.deviceName).text = endpoint?.name ?: context.getString(R.string.unknown_device)
 
                 // Apply rounded backgrounds based on position
                 val isTop = position == 0

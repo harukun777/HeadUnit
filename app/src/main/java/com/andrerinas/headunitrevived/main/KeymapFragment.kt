@@ -207,11 +207,11 @@ class KeymapFragment : Fragment(), MainActivity.KeyListener {
         if (keyCode == KeyEvent.KEYCODE_BACK && assignTargetCode == KeyEvent.KEYCODE_UNKNOWN) return false
 
         val keyName = try { KeyEvent.keyCodeToString(keyCode).replace("KEYCODE_", "") } catch (e: Exception) { "UNKNOWN" }
-        val actionName = if (event.action == KeyEvent.ACTION_DOWN) "DOWN" else "UP"
+        val actionName = getString(if (event.action == KeyEvent.ACTION_DOWN) R.string.key_action_down else R.string.key_action_up)
         
         AppLog.i("KeymapFragment: Captured $keyName ($keyCode) $actionName")
         
-        keypressDebuggerTextView.text = "Key: $keyName ($keyCode) - $actionName"
+        keypressDebuggerTextView.text = getString(R.string.key_test_result, keyName, keyCode, actionName)
         keypressDebuggerTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.brand_teal))
 
         if (assignTargetCode != KeyEvent.KEYCODE_UNKNOWN) {

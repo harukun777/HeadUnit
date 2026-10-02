@@ -846,7 +846,7 @@ class AapProjectionActivity : SurfaceActivity(), IProjectionView.Callbacks, Vide
             } catch (e: Exception) {
                 AppLog.e("Failed to enter PiP mode: ${e.message}")
                 e.printStackTrace()
-                Toast.makeText(this, "PiP failed: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.pip_failed, e.localizedMessage ?: ""), Toast.LENGTH_SHORT).show()
             }
         } else {
             AppLog.w("PiP mode not supported on this Android version (SDK < 26)")

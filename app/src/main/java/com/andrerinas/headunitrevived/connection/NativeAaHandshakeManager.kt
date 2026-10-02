@@ -318,7 +318,7 @@ class NativeAaHandshakeManager(
                 AppLog.i("NativeAA: Saving ${device.address} (${device.name}) to the list of auto-start devices.")
                 val newMacs = macs + device.address
                 settings.autoStartBluetoothDeviceMacs = newMacs
-                settings.autoStartBluetoothDeviceName = device.name ?: "Unknown Device"
+                settings.autoStartBluetoothDeviceName = device.name ?: context.getString(com.andrerinas.headunitrevived.R.string.unknown_device)
                 com.andrerinas.headunitrevived.utils.Settings.syncAutoStartBtMacsToDeviceStorage(context, newMacs)
             }
 

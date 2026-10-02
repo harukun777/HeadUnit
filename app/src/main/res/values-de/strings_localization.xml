@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="no_loading_media_title">Keine Dateien gefunden</string>
+    <string name="no_loading_media_downloads">Keine Bilder oder Videos im Downloads-Ordner gefunden:\n%1$s\n\nBitte kopiere deine Datei in dieses Verzeichnis.</string>
+    <string name="no_loading_media_app_folder">Keine Mediendateien im App-Ordner gefunden:\n%1$s\n\nBitte kopiere dein Startbild/Video in dieses Verzeichnis.</string>
+</resources>

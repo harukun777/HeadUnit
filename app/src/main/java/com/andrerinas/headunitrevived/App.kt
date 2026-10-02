@@ -15,6 +15,7 @@ import com.andrerinas.headunitrevived.ssl.ConscryptInitializer
 import com.andrerinas.headunitrevived.utils.AppLog
 import com.andrerinas.headunitrevived.utils.AppThemeManager
 import com.andrerinas.headunitrevived.utils.Settings
+import com.andrerinas.headunitrevived.utils.LocaleHelper
 import android.os.SystemClock
 import java.io.File
 
@@ -25,7 +26,7 @@ class App : Application() {
     }
 
     override fun attachBaseContext(base: Context?) {
-        super.attachBaseContext(base)
+        super.attachBaseContext(base?.let { LocaleHelper.wrapContext(it) })
         MultiDex.install(this)
     }
 
@@ -80,20 +81,20 @@ class App : Application() {
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val serviceChannel = NotificationChannel(defaultChannel, "Headunit Service", NotificationManager.IMPORTANCE_LOW)
-            serviceChannel.description = "Persistent service notification"
+            val serviceChannel = NotificationChannel(defaultChannel, getString(R.string.service_channel_name), NotificationManager.IMPORTANCE_LOW)
+            serviceChannel.description = getString(R.string.service_channel_description)
             serviceChannel.setShowBadge(false)
             component.notificationManager.createNotificationChannel(serviceChannel)
 
-            val mediaChannel = NotificationChannel(BackgroundNotification.mediaChannel, "Media Playback", NotificationManager.IMPORTANCE_LOW)
+            val mediaChannel = NotificationChannel(BackgroundNotification.mediaChannel, getString(R.string.media_channel_name), NotificationManager.IMPORTANCE_LOW)
             mediaChannel.setSound(null, null)
             mediaChannel.setShowBadge(false)
             component.notificationManager.createNotificationChannel(mediaChannel)
 
             AapNavigation.createNotificationChannel(this)
 
-            val bootChannel = NotificationChannel(bootStartChannel, "Boot Auto-Start", NotificationManager.IMPORTANCE_HIGH)
-            bootChannel.description = "Shown once after boot to open the app"
+            val bootChannel = NotificationChannel(bootStartChannel, getString(R.string.boot_channel_name), NotificationManager.IMPORTANCE_HIGH)
+            bootChannel.description = getString(R.string.boot_channel_description)
             bootChannel.setShowBadge(false)
             component.notificationManager.createNotificationChannel(bootChannel)
         }

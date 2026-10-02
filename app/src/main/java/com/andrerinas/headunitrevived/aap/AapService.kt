@@ -2182,7 +2182,7 @@ class AapService : Service(), UsbReceiver.Listener {
             .setSmallIcon(R.drawable.ic_stat_aa)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setOngoing(true)
-            .setContentTitle("Headunit Revived")
+            .setContentTitle(getString(R.string.app_name))
             .setContentText(contentText)
             .setContentIntent(PendingIntent.getActivity(
                 this, requestCode, notificationIntent,

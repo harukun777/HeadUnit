@@ -292,7 +292,7 @@ class VehicleInfoFragment : Fragment() {
                 setText(messageResId)
                 val textColorAttr = android.util.TypedValue()
                 context.theme.resolveAttribute(android.R.attr.textColorSecondary, textColorAttr, true)
-                setTextColor(context.resources.getColor(textColorAttr.resourceId, context.theme))
+                setTextColor(androidx.core.content.ContextCompat.getColor(context, textColorAttr.resourceId))
                 textSize = 13f
                 setPadding(0, 0, 0, 24)
             }

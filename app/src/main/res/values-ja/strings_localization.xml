@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="copyright_label">著作権</string>
+    <string name="loading_media_downloads">ダウンロードから選択</string>
+    <string name="loading_media_app_folder">アプリのフォルダから選択</string>
+    <string name="native_aa_wifi_required">ネイティブAndroid AutoにはWi-Fiが必要です。Wi-Fiを有効にしてください。</string>
+    <string name="no_paired_bluetooth_devices">ペアリング済みのBluetoothデバイスが見つかりません</string>
+    <string name="unknown_device">不明なデバイス</string>
+    <string name="searching_for_device">%1$sを検索中…</string>
+    <string name="pip_failed">小窓表示に失敗しました: %1$s</string>
+    <string name="key_test_prompt">確認するキーを押してください…</string>
+    <string name="key_test_result">キー: %1$s (%2$d) — %3$s</string>
+    <string name="key_action_down">押下</string>
+    <string name="key_action_up">解放</string>
+    <string name="no_loading_media_title">ファイルが見つかりません</string>
+    <string name="no_loading_media_downloads">ダウンロードフォルダに画像または動画が見つかりません:\n%1$s\n\n使用するファイルをこのフォルダにコピーしてください。</string>
+    <string name="no_loading_media_app_folder">アプリのフォルダに画像または動画が見つかりません:\n%1$s\n\n起動画面に使用する画像または動画をこのフォルダにコピーしてください。</string>
+    <string name="service_channel_name">接続サービス</string>
+    <string name="service_channel_description">接続サービスの動作状況を表示します</string>
+    <string name="media_channel_name">メディア再生</string>
+    <string name="boot_channel_name">端末起動時の自動起動</string>
+    <string name="boot_channel_description">端末の起動後にアプリを開くための通知を表示します</string>
+</resources>

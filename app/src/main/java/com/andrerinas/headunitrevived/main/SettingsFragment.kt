@@ -1974,6 +1974,7 @@ class SettingsFragment : Fragment() {
             .show()
     }
 
+    @androidx.annotation.RequiresApi(Build.VERSION_CODES.M)
     private fun showPermissionDialog() {
         MaterialAlertDialogBuilder(requireContext(), R.style.DarkAlertDialog)
             .setTitle(R.string.hotspot_permission_title)
@@ -2319,6 +2320,7 @@ class SettingsFragment : Fragment() {
         settings.reopenOnReconnection = false
     }
 
+    @androidx.annotation.RequiresApi(Build.VERSION_CODES.M)
     private fun showHotspotPermissionDialog() {
         MaterialAlertDialogBuilder(requireContext(), R.style.DarkAlertDialog)
             .setTitle(R.string.hotspot_permission_title)

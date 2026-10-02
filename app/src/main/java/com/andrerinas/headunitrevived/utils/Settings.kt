@@ -7,6 +7,7 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Build
+import com.andrerinas.headunitrevived.BuildConfig
 import com.andrerinas.headunitrevived.aap.protocol.proto.Control
 import com.andrerinas.headunitrevived.app.UsbAttachedActivity
 import com.andrerinas.headunitrevived.connection.UsbDeviceCompat
@@ -502,7 +503,7 @@ class Settings(private val context: Context) {
         }
 
     var appLanguage: String
-        get() = prefs.getString("app-language", "")!!
+        get() = prefs.getString("app-language", BuildConfig.DEFAULT_APP_LANGUAGE)!!
         set(value) { prefs.edit().putString("app-language", value).apply() }
 
     var mediaVolumeOffset: Int

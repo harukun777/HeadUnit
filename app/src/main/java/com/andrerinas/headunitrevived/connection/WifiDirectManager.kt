@@ -601,7 +601,7 @@ class WifiDirectManager(private val context: Context) : WifiP2pManager.Connectio
                 @Suppress("DEPRECATION")
                 wifiManager.isWifiEnabled = true
             } else {
-                Toast.makeText(context, "Native AA requires Wi-Fi. Please turn it on.", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, R.string.native_aa_wifi_required, Toast.LENGTH_LONG).show()
                 // We return for now, the user must turn it on. In the future we could open settings.
                 return
             }
