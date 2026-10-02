@@ -9,7 +9,7 @@ import java.nio.ByteBuffer
 internal class AapVideo(private val videoDecoder: VideoDecoder, private val settings: Settings, private val onFrameCorrupted: () -> Unit) {
 
     private val messageBuffer = ByteBuffer.allocate(
-        if (settings.videoCodec == VideoDecoder.CodecType.H265.mimeType) {
+        if (settings.effectiveVideoCodec == "H.265") {
             Messages.DEF_BUFFER_LENGTH * 64 // ~8MB for H.265 support
         } else {
             Messages.DEF_BUFFER_LENGTH * 16 // ~2MB for H.264 legacy support
@@ -55,14 +55,14 @@ internal class AapVideo(private val videoDecoder: VideoDecoder, private val sett
                 // Timestamp Indication (Offset 10)
                 val sc10 = findStartCode(buf, 10)
                 if (len > 10 + sc10 && sc10 > 0) {
-                    videoDecoder.decode(buf, 10, len - 10, settings.forceSoftwareDecoding, settings.videoCodec)
+                    videoDecoder.decode(buf, 10, len - 10, settings.forceSoftwareDecoding, settings.effectiveVideoCodec)
                     return true
                 }
                 
                 // Media Indication or Config (Offset 2)
                 val sc2 = findStartCode(buf, 2)
                 if (len > 2 + sc2 && sc2 > 0) {
-                    videoDecoder.decode(buf, 2, len - 2, settings.forceSoftwareDecoding, settings.videoCodec)
+                    videoDecoder.decode(buf, 2, len - 2, settings.forceSoftwareDecoding, settings.effectiveVideoCodec)
                     return true
                 }
                 AppLog.w("AapVideo: Dropped Flag 11 packet. len=$len")
@@ -119,9 +119,9 @@ internal class AapVideo(private val videoDecoder: VideoDecoder, private val sett
                         legacyAssembledBuffer = ByteArray(assembledSize + 1024)
                     }
                     messageBuffer.get(legacyAssembledBuffer!!, 0, assembledSize)
-                    videoDecoder.decode(legacyAssembledBuffer!!, 0, assembledSize, settings.forceSoftwareDecoding, settings.videoCodec)
+                    videoDecoder.decode(legacyAssembledBuffer!!, 0, assembledSize, settings.forceSoftwareDecoding, settings.effectiveVideoCodec)
                 } else {
-                    videoDecoder.decode(messageBuffer.array(), 0, assembledSize, settings.forceSoftwareDecoding, settings.videoCodec)
+                    videoDecoder.decode(messageBuffer.array(), 0, assembledSize, settings.forceSoftwareDecoding, settings.effectiveVideoCodec)
                 }
                 
                 messageBuffer.clear()

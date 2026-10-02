@@ -64,6 +64,7 @@ class SettingsFragment : Fragment() {
     private var pendingViewMode: Settings.ViewMode? = null
     private var pendingForceSoftware: Boolean? = null
     private var pendingVideoCodec: String? = null
+    private var pendingVideoCompatibility: Boolean? = null
     private var pendingFpsLimit: Int? = null
     private var pendingBluetoothAddress: String? = null
     private var pendingEnableAudioSink: Boolean? = null
@@ -163,6 +164,7 @@ class SettingsFragment : Fragment() {
         pendingViewMode = settings.viewMode
         pendingForceSoftware = settings.forceSoftwareDecoding
         pendingVideoCodec = settings.videoCodec
+        pendingVideoCompatibility = settings.videoCompatibilityMode
         pendingFpsLimit = settings.fpsLimit
         pendingBluetoothAddress = settings.bluetoothAddress
         pendingEnableAudioSink = settings.enableAudioSink
@@ -246,6 +248,7 @@ class SettingsFragment : Fragment() {
         pendingViewMode = settings.viewMode
         pendingForceSoftware = settings.forceSoftwareDecoding
         pendingVideoCodec = settings.videoCodec
+        pendingVideoCompatibility = settings.videoCompatibilityMode
         pendingFpsLimit = settings.fpsLimit
         pendingBluetoothAddress = settings.bluetoothAddress
         pendingEnableAudioSink = settings.enableAudioSink
@@ -352,6 +355,7 @@ class SettingsFragment : Fragment() {
         pendingViewMode?.let { settings.viewMode = it }
         pendingForceSoftware?.let { settings.forceSoftwareDecoding = it }
         pendingVideoCodec?.let { settings.videoCodec = it }
+        pendingVideoCompatibility?.let { settings.videoCompatibilityMode = it }
         pendingFpsLimit?.let { settings.fpsLimit = it }
         pendingBluetoothAddress?.let { settings.bluetoothAddress = it }
         pendingEnableAudioSink?.let { settings.enableAudioSink = it }
@@ -443,6 +447,7 @@ class SettingsFragment : Fragment() {
                         pendingViewMode != settings.viewMode ||
                         pendingForceSoftware != settings.forceSoftwareDecoding ||
                         pendingVideoCodec != settings.videoCodec ||
+                        pendingVideoCompatibility != settings.videoCompatibilityMode ||
                         pendingFpsLimit != settings.fpsLimit ||
                         pendingBluetoothAddress != settings.bluetoothAddress ||
                         pendingEnableAudioSink != settings.enableAudioSink ||
@@ -480,6 +485,7 @@ class SettingsFragment : Fragment() {
         // Check for restart requirement
         requiresRestart = pendingResolution != settings.resolutionId ||
                           pendingVideoCodec != settings.videoCodec ||
+                          pendingVideoCompatibility != settings.videoCompatibilityMode ||
                           pendingFpsLimit != settings.fpsLimit ||
                           pendingDpi != settings.dpiPixelDensity ||
                           pendingForceSoftware != settings.forceSoftwareDecoding ||
@@ -1050,6 +1056,19 @@ class SettingsFragment : Fragment() {
 
         // --- Video Settings ---
         items.add(SettingItem.CategoryHeader("video", R.string.category_video))
+
+        items.add(SettingItem.ToggleSettingEntry(
+            stableId = "videoCompatibilityMode",
+            nameResId = R.string.video_compatibility_title,
+            descriptionResId = R.string.video_compatibility_summary,
+            isChecked = pendingVideoCompatibility!!,
+            onCheckedChanged = { isChecked ->
+                pendingVideoCompatibility = isChecked
+                requiresRestart = true
+                checkChanges()
+                updateSettingsList()
+            }
+        ))
 
         items.add(SettingItem.ToggleSettingEntry(
             stableId = "forceSoftwareDecoding",

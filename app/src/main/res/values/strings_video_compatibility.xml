@@ -1,0 +1,4 @@
+<resources>
+    <string name="video_compatibility_title">Connection compatibility mode</string>
+    <string name="video_compatibility_summary">Use up to 720p, H.264 and 30 FPS for phones that fail to start projection. Disable to use your resolution, codec and FPS settings. Reconnect after changing this option.</string>
+</resources>

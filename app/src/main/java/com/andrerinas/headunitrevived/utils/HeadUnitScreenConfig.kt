@@ -211,7 +211,17 @@ object HeadUnitScreenConfig {
             }
         }
         
-        if (!isResolutionLocked && selectedResolution == Settings.Resolution.AUTO) {
+        if (isResolutionLocked) {
+            // Keep the announced dimensions stable when the surface changes.
+        } else if (currentSettings.videoCompatibilityMode) {
+            negotiatedResolutionType = if (isPortraitDisplay) {
+                Control.Service.MediaSinkService.VideoConfiguration.VideoCodecResolutionType._720x1280
+            } else if (screenWidthPx <= 800 && screenHeightPx <= 480) {
+                Control.Service.MediaSinkService.VideoConfiguration.VideoCodecResolutionType._800x480
+            } else {
+                Control.Service.MediaSinkService.VideoConfiguration.VideoCodecResolutionType._1280x720
+            }
+        } else if (selectedResolution == Settings.Resolution.AUTO) {
             if (isPortraitDisplay) {
                 negotiatedResolutionType = if (screenWidthPx > 720 || screenHeightPx > 1280) {
                     Control.Service.MediaSinkService.VideoConfiguration.VideoCodecResolutionType._1080x1920
@@ -425,6 +435,8 @@ object HeadUnitScreenConfig {
     fun computeSettingsHash(settings: Settings): Int {
         var hash = 17
         hash = 31 * hash + settings.resolutionId
+        hash = 31 * hash + (if (settings.videoCompatibilityMode) 1 else 0)
+        hash = 31 * hash + settings.effectiveVideoCodec.hashCode()
         hash = 31 * hash + settings.dpiPixelDensity
         hash = 31 * hash + settings.insetLeft
         hash = 31 * hash + settings.insetTop

@@ -89,6 +89,7 @@ object SettingsBackupManager {
         "head-unit-model" to ValueType.STRING,
         "wifi-connection-mode" to ValueType.INT,
         "video-codec" to ValueType.STRING,
+        "video-compatibility-mode" to ValueType.BOOLEAN,
         "fps-limit" to ValueType.INT,
         "auto-connect-last-session" to ValueType.BOOLEAN,
         "auto-connect-single-usb" to ValueType.BOOLEAN,

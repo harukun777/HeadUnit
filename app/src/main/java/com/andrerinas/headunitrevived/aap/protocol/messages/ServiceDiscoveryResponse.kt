@@ -45,7 +45,7 @@ class ServiceDiscoveryResponse(private val context: Context)
             val video = Control.Service.newBuilder().also { service ->
                 service.id = Channel.ID_VID
                 service.mediaSinkService = Control.Service.MediaSinkService.newBuilder().also { mediaSinkServiceBuilder ->
-                    val codecToRequest = when (settings.videoCodec) {
+                    val codecToRequest = when (settings.effectiveVideoCodec) {
                         "H.265" -> if (com.andrerinas.headunitrevived.decoder.VideoDecoder.isHevcSupported()) {
                             Media.MediaCodecType.MEDIA_CODEC_VIDEO_H265
                         } else {
@@ -71,7 +71,7 @@ class ServiceDiscoveryResponse(private val context: Context)
                     val phoneHeightMargin = HeadUnitScreenConfig.getHeightMargin()
 
                     // Enforce H.265 for 1440p resolution as required by Android Auto, but ONLY if hardware supports it
-                    val effectiveCodec = if ((negotiatedResolution == Control.Service.MediaSinkService.VideoConfiguration.VideoCodecResolutionType._2560x1440 ||
+                    val effectiveCodec = if (!settings.videoCompatibilityMode && (negotiatedResolution == Control.Service.MediaSinkService.VideoConfiguration.VideoCodecResolutionType._2560x1440 ||
                         negotiatedResolution == Control.Service.MediaSinkService.VideoConfiguration.VideoCodecResolutionType._1440x2560) &&
                         com.andrerinas.headunitrevived.decoder.VideoDecoder.isHevcReliable()) {
                         AppLog.i("Resolution is 1440p -> Enforcing H.265 codec")
@@ -84,12 +84,13 @@ class ServiceDiscoveryResponse(private val context: Context)
                     mediaSinkServiceBuilder.audioType = Media.AudioStreamType.NONE
                     mediaSinkServiceBuilder.availableWhileInCall = true
 
+                    AppLog.i("[ServiceDiscovery] Compatibility=${settings.videoCompatibilityMode}, codec=$effectiveCodec, fps=${settings.effectiveFpsLimit}")
                     AppLog.i("[ServiceDiscovery] NegotiatedResolution is: ${HeadUnitScreenConfig.getNegotiatedWidth()}x${HeadUnitScreenConfig.getNegotiatedHeight()}")
                     AppLog.i("[ServiceDiscovery] Margins are: ${phoneWidthMargin}x${phoneHeightMargin}")
 
                     mediaSinkServiceBuilder.addVideoConfigs(Control.Service.MediaSinkService.VideoConfiguration.newBuilder().apply {
                         codecResolution = negotiatedResolution
-                        frameRate = when (settings.fpsLimit) {
+                        frameRate = when (settings.effectiveFpsLimit) {
                             30 -> Control.Service.MediaSinkService.VideoConfiguration.VideoFrameRateType._30
                             else -> Control.Service.MediaSinkService.VideoConfiguration.VideoFrameRateType._60
                         }

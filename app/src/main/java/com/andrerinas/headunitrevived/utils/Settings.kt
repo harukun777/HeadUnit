@@ -326,6 +326,18 @@ class Settings(private val context: Context) {
         }
         set(value) { prefs.edit().putInt("wifi-connection-mode", value).apply() }
 
+    // Sender encoder capabilities cannot be inferred from this head unit's decoder.
+    // Apply on every session, including installations with saved 1440p/HEVC settings.
+    var videoCompatibilityMode: Boolean
+        get() = prefs.getBoolean("video-compatibility-mode", true)
+        set(value) { prefs.edit().putBoolean("video-compatibility-mode", value).apply() }
+
+    val effectiveVideoCodec: String
+        get() = if (videoCompatibilityMode) "H.264" else videoCodec
+
+    val effectiveFpsLimit: Int
+        get() = if (videoCompatibilityMode) 30 else fpsLimit
+
     var videoCodec: String
         get() = prefs.getString("video-codec", "Auto")!!
         set(value) { prefs.edit().putString("video-codec", value).apply() }

@@ -1,0 +1,4 @@
+<resources>
+    <string name="video_compatibility_title">接続互換モード</string>
+    <string name="video_compatibility_summary">映像が始まらない端末向けに、最大720p・H.264・30 FPSで接続します。オフにすると設定した解像度・映像形式・FPSを使用します。変更後は再接続してください。</string>
+</resources>
